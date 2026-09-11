@@ -1,0 +1,8 @@
+[
+  {"name":"Android edge","description":"Zero-root observation, offline state and human control."},
+  {"name":"Policy admission","description":"Hard constraints execute before scoring or model intelligence."},
+  {"name":"Remote compute","description":"Governed CPU, GitHub runner and optional NVIDIA execution paths."},
+  {"name":"Evidence","description":"Commit-bound tests, artifact digests and decision provenance."},
+  {"name":"Telemetry","description":"IDs, timings and operational metrics only; no secrets or prompts."},
+  {"name":"Self-healing","description":"Bounded fallback and rollback without widening authority."}
+]

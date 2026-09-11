@@ -1,0 +1,32 @@
+{
+  "request": {
+    "taskId": "imagery-001",
+    "requiredCapabilities": ["gpu-inference"],
+    "maxLatencyMs": 500,
+    "maxCost": 2,
+    "batteryPct": 61,
+    "transport": "wifi",
+    "metered": true,
+    "humanApproved": false
+  },
+  "policy": {
+    "criticalBatteryPct": 15,
+    "criticalEnergyLimit": 2,
+    "meteredMultiplier": 3,
+    "allowedProcessingLocations": ["device", "tenant-cloud", "github-runner"]
+  },
+  "candidates": [{
+    "id": "nvidia-gpu-remote",
+    "capabilities": ["gpu-inference", "imagery"],
+    "available": true,
+    "consequential": false,
+    "processingLocation": "tenant-cloud",
+    "latencyMs": 120,
+    "cost": 1,
+    "reliability": 0.98,
+    "energyCost": 2,
+    "networkCost": 8,
+    "privacyRisk": 3,
+    "deviceLoad": 1
+  }]
+}

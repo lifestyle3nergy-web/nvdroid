@@ -1,0 +1,15 @@
+{
+  "name": "@twgt/nvdroid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TWGT Android thin-client and governed remote-compute reference service",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "configure": "node tools/configure.mjs",
+    "compile": "node tools/compile.mjs",
+    "test": "node --test",
+    "validate": "npm run configure && npm run compile && npm test",
+    "evidence": "node tools/create-evidence.mjs"
+  }
+}
