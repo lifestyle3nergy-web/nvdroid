@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "activation": "FROZEN",
+  "providers": [
+    {
+      "id": "nvidia-omarchy-edge",
+      "class": "local-edge",
+      "hostProfile": "twgt-omarchy-workstation",
+      "runtime": "cuda-tensorrt",
+      "enabled": false,
+      "costModel": "no-licence-cost; hardware required"
+    },
+    {
+      "id": "nvidia-kaggle-p100",
+      "class": "hosted-notebook",
+      "runtime": "kaggle-gpu",
+      "enabled": false,
+      "costModel": "free quota; availability and limits not guaranteed"
+    }
+  ]
+}
