@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "component": "NVDROID",
+  "initialState": "FROZEN",
+  "permittedStates": ["FROZEN", "ACTIVE"],
+  "requiredApprovals": 1,
+  "requiredChecks": [
+    "NVDROID CI / validate",
+    "CodeQL / Analyze (javascript-typescript)",
+    "CodeQL / Analyze (actions)",
+    "Dependency Review / dependency-review"
+  ],
+  "activationRequires": [
+    "signed ADR",
+    "manual environment approval",
+    "fresh checks on exact candidate SHA",
+    "zero high or critical audit findings",
+    "rollback pin"
+  ],
+  "automaticDeployment": false
+}

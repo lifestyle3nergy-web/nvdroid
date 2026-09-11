@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "profiles": [
+    {
+      "id": "twgt-omarchy-workstation",
+      "repository": "lifestyle3nergy-web/omarchy",
+      "ref": "quattro",
+      "verifiedCommit": "b5589faaf80c6f87c07d4560fca37c4a81722f28",
+      "role": "TOOL",
+      "state": "FROZEN",
+      "architectures": ["x86_64"],
+      "requirements": ["supported NVIDIA PCIe GPU", "nvidia-utils", "CUDA runtime", "durable TWGT state endpoint"],
+      "owns": ["operator workstation", "local GPU process host"],
+      "mustNotOwn": ["TWGT policy", "task state", "secrets", "provider selection", "audit authority"]
+    }
+  ]
+}

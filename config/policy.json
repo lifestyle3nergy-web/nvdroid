@@ -1,0 +1,6 @@
+{
+  "criticalBatteryPct": 15,
+  "criticalEnergyLimit": 2,
+  "meteredMultiplier": 3,
+  "allowedProcessingLocations": ["device", "device-edge", "tenant-cloud", "approved-public-cloud", "github-runner"]
+}

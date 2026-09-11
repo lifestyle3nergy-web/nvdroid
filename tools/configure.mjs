@@ -1,0 +1,10 @@
+import { access, readFile } from "node:fs/promises";
+for (const path of ["package.json", "config/policy.json", "config/providers.json", "config/host-profiles.json", "src/policy.mjs"]) await access(path);
+const policy = JSON.parse(await readFile("config/policy.json", "utf8"));
+if (!Array.isArray(policy.allowedProcessingLocations) || !policy.allowedProcessingLocations.length) throw new Error("allowedProcessingLocations is required");
+const providers = JSON.parse(await readFile("config/providers.json", "utf8"));
+const hosts = JSON.parse(await readFile("config/host-profiles.json", "utf8"));
+if (providers.activation !== "FROZEN" || providers.providers.some(provider => provider.enabled !== false)) throw new Error("providers must be FROZEN and disabled");
+if (new Set(providers.providers.map(provider => provider.id)).size !== providers.providers.length) throw new Error("provider ids must be unique");
+if (hosts.profiles.some(host => host.state !== "FROZEN" || !/^[0-9a-f]{40}$/.test(host.verifiedCommit))) throw new Error("host profiles require a frozen 40-character commit pin");
+process.stdout.write("configuration valid\n");
