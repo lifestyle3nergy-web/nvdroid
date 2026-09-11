@@ -22,13 +22,18 @@ test("rotates to the second provider without losing operation state", async () =
 });
 
 test("fails closed when a provider result is ambiguous", async () => {
+  const store = new InMemoryOperationStore();
   let calls = 0;
-  const result = await executeWithRotation({
+  const input = {
     request: { ...request, operationId: "op-2" },
     providerIds: ["nvidia-omarchy-edge", "nvidia-kaggle-p100"],
+    store,
     invoke: async () => { calls += 1; throw new Error("timeout after dispatch"); }
-  });
+  };
+  const result = await executeWithRotation(input);
+  const repeated = await executeWithRotation(input);
   assert.equal(result.status, "reconciliation-required");
+  assert.equal(repeated.status, "reconciliation-required");
   assert.equal(calls, 1);
 });
 
@@ -39,4 +44,14 @@ test("reuses a completed operation instead of executing twice", async () => {
   await executeWithRotation(input);
   await executeWithRotation(input);
   assert.equal(calls, 1);
+});
+
+test("rejects operationId reuse with a different immutable request", async () => {
+  const store = new InMemoryOperationStore();
+  const input = { request: { ...request, operationId: "op-4" }, providerIds: ["a", "b"], store, invoke: async () => ({ artifactRef: "sha256:done" }) };
+  await executeWithRotation(input);
+  await assert.rejects(
+    executeWithRotation({ ...input, request: { ...input.request, payloadRef: "sha256:substituted" } }),
+    /operationId is already bound/
+  );
 });

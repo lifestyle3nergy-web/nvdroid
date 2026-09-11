@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 export class InMemoryOperationStore {
   #operations = new Map();
 
@@ -12,6 +14,16 @@ export class InMemoryOperationStore {
   }
 }
 
+export function executionRequestDigest(request) {
+  const immutableRequest = [
+    request.taskId,
+    request.payloadRef,
+    request.checkpointRef ?? null,
+    request.idempotent === true
+  ];
+  return createHash("sha256").update(JSON.stringify(immutableRequest)).digest("hex");
+}
+
 function assertExecutionRequest(request) {
   if (!request?.operationId || typeof request.operationId !== "string") throw new TypeError("operationId must be a non-empty string");
   if (!request?.taskId || typeof request.taskId !== "string") throw new TypeError("taskId must be a non-empty string");
@@ -24,14 +36,17 @@ export async function executeWithRotation({ request, providerIds, invoke, store 
   if (!Array.isArray(providerIds) || providerIds.length < 2) throw new TypeError("at least two providerIds are required");
   if (new Set(providerIds).size !== providerIds.length) throw new TypeError("providerIds must be unique");
 
+  const requestDigest = executionRequestDigest(request);
   const existing = store.get(request.operationId);
-  if (existing?.status === "succeeded") return existing;
+  if (existing && existing.requestDigest !== requestDigest) throw new Error("operationId is already bound to a different immutable request");
+  if (existing?.status === "succeeded" || existing?.status === "reconciliation-required") return existing;
 
   const operation = existing ?? {
     operationId: request.operationId,
     taskId: request.taskId,
     status: "pending",
     payloadRef: request.payloadRef,
+    requestDigest,
     checkpointRef: request.checkpointRef ?? null,
     attempts: []
   };
