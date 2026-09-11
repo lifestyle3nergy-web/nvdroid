@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
-const files=["package.json","config/policy.json","src/contracts.mjs","src/policy.mjs","src/nvidia-adapter.mjs"];
+const files=["package.json","config/policy.json","config/providers.json","config/host-profiles.json","src/contracts.mjs","src/policy.mjs","src/nvidia-adapter.mjs","src/execution-router.mjs"];
 const digest=createHash("sha256");
 for (const f of files) digest.update(await readFile(f));
 let commit="uncommitted"; try { commit=execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(); } catch {}
