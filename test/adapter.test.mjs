@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { omarchyGpuCandidate, kaggleGpuCandidate, nvidiaCandidate, nvidiaProviderCatalog, redactAdapterConfiguration } from "../src/nvidia-adapter.mjs";
+import { localCpuCandidate } from "../src/cpu-adapter.mjs";
 test("NVIDIA capacity is disabled by default",()=>assert.equal(nvidiaCandidate().available,false));
 test("two NVIDIA execution targets are registered and frozen",()=>{
   const providers = nvidiaProviderCatalog();
@@ -10,3 +11,12 @@ test("two NVIDIA execution targets are registered and frozen",()=>{
   assert.equal(kaggleGpuCandidate().processingLocation, "approved-public-cloud");
 });
 test("adapter evidence redacts secrets",()=>assert.deepEqual(redactAdapterConfiguration({endpoint:"x",apiToken:"secret"}),{endpoint:"x",apiToken:"[REDACTED]"}));
+test("local CPU fallback covers every NVIDIA workload without a network dependency",()=>{
+  const fallback = localCpuCandidate();
+  for (const provider of nvidiaProviderCatalog()) {
+    assert.ok(provider.capabilities.every(capability => fallback.capabilities.includes(capability)));
+  }
+  assert.equal(fallback.provider, "local-cpu");
+  assert.equal(fallback.available, true);
+  assert.equal(fallback.networkCost, 0);
+});
