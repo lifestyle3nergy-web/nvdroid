@@ -12,3 +12,11 @@ test("rejects latency outside hard constraint",()=>assert.equal(decide({...reque
 test("rejects consequential work without approval",()=>assert.equal(decide(request,[{...candidate,consequential:true}],policy).status,"no-admissible-path"));
 test("rejects expensive work on critical battery",()=>assert.equal(decide({...request,batteryPct:5},[{...candidate,energyCost:3}],policy).status,"no-admissible-path"));
 test("tie breaking is deterministic",()=>assert.equal(decide(request,[{...candidate,id:"z"},{...candidate,id:"a"}],policy).selectedCandidateId,"a"));
+test("rejects nested credential values at request admission",()=>{
+  const result = decide({...request, options: { apiToken: "secret" }}, [candidate], policy);
+  assert.equal(result.status, "rejected");
+  assert.match(result.errors.join(" "), /credential references only/);
+});
+test("accepts a credential reference name without a credential value",()=>{
+  assert.equal(decide({...request, credentialRef: "NVIDIA_RUNNER_TOKEN"}, [candidate], policy).status, "selected");
+});

@@ -50,7 +50,10 @@ export function nvidiaProviderCatalog() {
 }
 
 export function redactAdapterConfiguration(config) {
-  const safe = structuredClone(config);
-  for (const key of Object.keys(safe)) if (/key|secret|token|password/i.test(key)) safe[key] = "[REDACTED]";
-  return safe;
+  if (Array.isArray(config)) return config.map(redactAdapterConfiguration);
+  if (!config || typeof config !== "object") return config;
+  return Object.fromEntries(Object.entries(config).map(([key, value]) => [
+    key,
+    /(?:credential|secret|token|password|api[-_]?key)/i.test(key) && !/ref$/i.test(key) ? "[REDACTED]" : redactAdapterConfiguration(value)
+  ]));
 }

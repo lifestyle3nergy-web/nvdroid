@@ -11,6 +11,14 @@ test("two NVIDIA execution targets are registered and frozen",()=>{
   assert.equal(kaggleGpuCandidate().processingLocation, "approved-public-cloud");
 });
 test("adapter evidence redacts secrets",()=>assert.deepEqual(redactAdapterConfiguration({endpoint:"x",apiToken:"secret"}),{endpoint:"x",apiToken:"[REDACTED]"}));
+test("adapter evidence redacts nested secrets and array entries",()=>assert.deepEqual(
+  redactAdapterConfiguration({auth:{credentials:[{password:"secret",credentialRef:"runner-secret"}]}}),
+  {auth:{credentials:"[REDACTED]"}}
+));
+test("adapter evidence preserves credential reference names",()=>assert.deepEqual(
+  redactAdapterConfiguration({credentialRef:"NVIDIA_RUNNER_TOKEN"}),
+  {credentialRef:"NVIDIA_RUNNER_TOKEN"}
+));
 test("local CPU fallback covers every NVIDIA workload without a network dependency",()=>{
   const fallback = localCpuCandidate();
   for (const provider of nvidiaProviderCatalog()) {
