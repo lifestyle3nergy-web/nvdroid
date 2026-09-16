@@ -3,11 +3,20 @@
   "activation": "FROZEN",
   "providers": [
     {
+      "id": "local-cpu-fallback",
+      "class": "local-cpu",
+      "runtime": "node",
+      "enabled": true,
+      "capabilities": ["gpu-inference", "imagery", "digital-twin"],
+      "costModel": "local device resources"
+    },
+    {
       "id": "nvidia-omarchy-edge",
       "class": "local-edge",
       "hostProfile": "twgt-omarchy-workstation",
       "runtime": "cuda-tensorrt",
       "enabled": false,
+      "fallbackProviderId": "local-cpu-fallback",
       "costModel": "no-licence-cost; hardware required"
     },
     {
@@ -15,6 +24,7 @@
       "class": "hosted-notebook",
       "runtime": "kaggle-gpu",
       "enabled": false,
+      "fallbackProviderId": "local-cpu-fallback",
       "costModel": "free quota; availability and limits not guaranteed"
     }
   ]

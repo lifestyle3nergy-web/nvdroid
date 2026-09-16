@@ -1,8 +1,16 @@
 export const POLICY_VERSION = "nvdroid-policy-1";
+const SENSITIVE_KEY = /(?:credential|secret|token|password|api[-_]?key)/i;
+const REFERENCE_KEY = /ref$/i;
+
+export function containsSensitiveKey(value) {
+  if (!value || typeof value !== "object") return false;
+  return Object.entries(value).some(([key, nested]) => (SENSITIVE_KEY.test(key) && !REFERENCE_KEY.test(key)) || containsSensitiveKey(nested));
+}
 
 export function validateRequest(value) {
   const errors = [];
   if (!value || typeof value !== "object") return ["request must be an object"];
+  if (containsSensitiveKey(value)) errors.push("request must contain credential references only, never credential values");
   if (!value.taskId || typeof value.taskId !== "string") errors.push("taskId must be a non-empty string");
   if (!Number.isFinite(value.maxLatencyMs) || value.maxLatencyMs < 0) errors.push("maxLatencyMs must be >= 0");
   if (!Number.isFinite(value.maxCost) || value.maxCost < 0) errors.push("maxCost must be >= 0");
